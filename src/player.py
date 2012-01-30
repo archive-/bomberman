@@ -1,5 +1,6 @@
+import sys
 import curses
-
+import time
 from entity import Entity
 from bomb import Bomb
 
@@ -15,6 +16,11 @@ class Player(Entity):
             Bomb(self)
             self.num_bombs -= 1
 
+    def update(self):
+        fire_time = self.level.fires[self.y][self.x]
+        if fire_time and time.time() - fire_time <= 0.4:
+            self.die()
+
     def move(self, dy, dx, win):
         y = self.y + dy
         x = self.x + dx
@@ -25,3 +31,7 @@ class Player(Entity):
             win.stdscr.delch(self.y, self.x)
             self.y = y
             self.x = x
+
+    def die(self):
+        # TODO
+        sys.exit(0)

@@ -18,6 +18,7 @@ class Client(object):
         while self.running:
             self.win.handle_events(self.player)
             self.win.render()
+            self.player.update()
             for entity in self.level.copy():
                 entity.update()
 

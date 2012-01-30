@@ -1,5 +1,5 @@
 import curses
-
+import time
 from bomb import Bomb
 
 class CursesWindow(object):
@@ -17,6 +17,7 @@ class CursesWindow(object):
         self.client.run()
 
     def render(self):
+        render_time = time.time()
         stdadd = self.stdscr.addch
         for y, tiles in enumerate(self.client.level.tiles):
             for x, tile in enumerate(tiles):
@@ -43,12 +44,25 @@ class CursesWindow(object):
             if type(entity) == Bomb:
                 stdadd(2*entity.y,   4*entity.x,   '[', curses.color_pair(1))
                 stdadd(2*entity.y+1, 4*entity.x,   '[', curses.color_pair(1))
-                stdadd(2*entity.y,   4*entity.x+1, str(entity.curr_tick%10), curses.color_pair(1))
-                stdadd(2*entity.y+1, 4*entity.x+1, str(entity.curr_tick%10), curses.color_pair(1))
-                stdadd(2*entity.y,   4*entity.x+2, str(entity.curr_tick%10), curses.color_pair(1))
-                stdadd(2*entity.y+1, 4*entity.x+2, str(entity.curr_tick%10), curses.color_pair(1))
+                stdadd(2*entity.y,   4*entity.x+1, str(int(entity.curr_tick%10)), curses.color_pair(1))
+                stdadd(2*entity.y+1, 4*entity.x+1, str(int(entity.curr_tick%10)), curses.color_pair(1))
+                stdadd(2*entity.y,   4*entity.x+2, str(int(entity.curr_tick%10)), curses.color_pair(1))
+                stdadd(2*entity.y+1, 4*entity.x+2, str(int(entity.curr_tick%10)), curses.color_pair(1))
                 stdadd(2*entity.y,   4*entity.x+3, ']', curses.color_pair(1))
                 stdadd(2*entity.y+1, 4*entity.x+3, ']', curses.color_pair(1))
+        for y, fire_times in enumerate(self.client.level.fires):
+            for x, fire_time in enumerate(fire_times):
+                if fire_time is not None and render_time - fire_time < 0.4:
+                    fire_sign = '^'
+                    stdadd(2*y, 4*x, fire_sign, curses.color_pair(1))
+                    stdadd(2*y+1, 4*x, fire_sign, curses.color_pair(1))
+                    stdadd(2*y, 4*x+1, fire_sign, curses.color_pair(1))
+                    stdadd(2*y+1, 4*x+1, fire_sign, curses.color_pair(1))
+                    # fix aspect ratio
+                    stdadd(2*y, 4*x+2, fire_sign, curses.color_pair(1))
+                    stdadd(2*y+1, 4*x+2, fire_sign, curses.color_pair(1))
+                    stdadd(2*y, 4*x+3, fire_sign, curses.color_pair(1))
+                    stdadd(2*y+1, 4*x+3, fire_sign, curses.color_pair(1))
         # draw
         self.stdscr.refresh()
 
